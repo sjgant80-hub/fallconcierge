@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FallConcierge — Sovereign AI concierge with Jungian archetype profiling, Freudian shadow reading, and adaptive sales intelligence.">
+<meta name="theme-color" content="#7c5ce0">
+<title>FallConcierge — Sovereign AI Concierge · Psychological Profiling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #050507;
+  --surface: #0a0b10;
+  --surface-2: #0e0f16;
+  --border: #151520;
+  --border-light: #1e1e30;
+  --text: #c8c4d8;
+  --text-dim: #6e6a80;
+  --text-bright: #eee8ff;
+  --accent: #7c5ce0;
+  --accent-glow: rgba(124, 92, 224, 0.15);
+  --green: #00e87b;
+  --green-glow: rgba(0, 232, 123, 0.12);
+  --gold: #e4b94a;
+  --gold-glow: rgba(228, 185, 74, 0.1);
+  --kill: #ff3b3b;
+  --font-head: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-body);
+  background: var(--void);
+  color: var(--text);
+  line-height: 1.65;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* grain */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* header */
+.header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.header-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-badge {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.archetype-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  background: var(--accent-glow);
+  color: var(--accent);
+  display: none;
+}
+.shadow-badge {
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: rgba(228, 185, 74, 0.1);
+  color: var(--gold);
+  display: none;
+}
+.key-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.key-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* key row */
+.key-row {
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--surface);
+}
+.key-row.hidden { display: none; }
+.key-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--void);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.key-input:focus { outline: none; border-color: var(--accent); }
+.key-save {
+  padding: 8px 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: var(--void);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* status bar */
+.status-bar {
+  padding: 6px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  display: inline-block;
+  margin-right: 6px;
+}
+.readiness-bar {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.readiness-pip {
+  width: 8px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--border-light);
+}
+.readiness-pip.active { background: var(--green); }
+
+/* messages */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msg {
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.msg.ai {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: var(--void);
+}
+.msg.system {
+  align-self: center;
+  background: none;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 0;
+}
+.msg .meta {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+/* input row */
+.input-row {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.msg-input {
+  flex: 1;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+.msg-input:focus { outline: none; border-color: var(--accent); }
+.msg-input::placeholder { color: var(--text-dim); }
+.send-btn {
+  padding: 14px 20px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: var(--void);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.send-btn:hover { filter: brightness(1.1); }
+
+/* psych panel */
+.psych-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.psych-toggle:hover { border-color: var(--gold); color: var(--gold); }
+.psych-panel {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  display: none;
+  flex-shrink: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.psych-panel.open { display: block; }
+.psych-label { color: var(--gold); }
+.psych-value { color: var(--text); }
+
+@media (max-width: 640px) {
+  .header { padding: 12px 16px; }
+  .messages { padding: 16px; }
+  .input-row { padding: 12px 16px; }
+  .msg { max-width: 92%; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <span style="color:var(--accent);">&#9671;</span>
+    FallConcierge
+    <span class="header-badge" id="statusBadge" style="background:var(--gold-glow);color:var(--gold);">KEY NEEDED</span>
+  </div>
+  <div class="header-right">
+    <span class="archetype-badge" id="archBadge"></span>
+    <span class="shadow-badge" id="shadowBadge"></span>
+    <button class="key-btn" onclick="toggleKey()">&#9881; API Key</button>
+  </div>
+</div>
+
+<div class="key-row hidden" id="keyRow">
+  <input type="password" class="key-input" id="keyInput" placeholder="Claude API key (sk-ant-...)" onkeydown="if(event.key==='Enter')saveKey();">
+  <button class="key-save" onclick="saveKey()">Save</button>
+</div>
+
+<div class="status-bar">
+  <span><span class="status-dot" id="statusDot"></span><span id="statusText">Add Claude API key to start</span></span>
+  <span style="display:flex;align-items:center;gap:10px;">
+    <span class="readiness-bar" id="readinessBar">
+      <span style="margin-right:4px;">READINESS</span>
+    </span>
+    <button class="psych-toggle" onclick="togglePsych()">&#x25C7; PSYCH</button>
+  </span>
+</div>
+
+<div class="messages" id="messages">
+  <div class="msg ai" id="welcomeMsg">Hey — I'm the AI concierge. I adapt how I talk to you based on who you are and what you need. Tell me about your business and I'll show you where AI fits. Or just ask me anything.</div>
+</div>
+
+<div class="psych-panel" id="psychPanel">
+  <div id="psychContent">No profile data yet — start a conversation.</div>
+</div>
+
+<div class="input-row">
+  <input type="text" class="msg-input" id="msgInput" placeholder="Tell me about your business..." onkeydown="if(event.key==='Enter'){event.preventDefault();send();}">
+  <button class="send-btn" onclick="send()">&#8594;</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// FALLCONCIERGE — Sovereign AI Concierge
+// Jungian Archetypes · Freudian Shadow · ToneEngine · Sales 101
+// ═══════════════════════════════════════
+
+// ── API KEY ──
+function getKey() { return localStorage.getItem('fallconcierge_key') || ''; }
+function saveKey() {
+  const k = document.getElementById('keyInput').value.trim();
+  if (k) {
+    localStorage.setItem('fallconcierge_key', k);
+    document.getElementById('keyRow').classList.add('hidden');
+    setStatus('Concierge ready', 'ready');
+    document.getElementById('statusBadge').textContent = 'READY';
+    document.getElementById('statusBadge').style.background = 'var(--green-glow)';
+    document.getElementById('statusBadge').style.color = 'var(--green)';
+  }
+}
+function toggleKey() { document.getElementById('keyRow').classList.toggle('hidden'); }
+function togglePsych() { document.getElementById('psychPanel').classList.toggle('open'); }
+
+function setStatus(text, state) {
+  document.getElementById('statusText').textContent = text;
+  const dot = document.getElementById('statusDot');
+  if (state === 'ready') { dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 6px var(--green)'; }
+  else if (state === 'thinking') { dot.style.background = 'var(--gold)'; dot.style.boxShadow = '0 0 6px var(--gold)'; }
+  else { dot.style.background = 'var(--text-dim)'; dot.style.boxShadow = 'none'; }
+}
+
+// Init
+(function() {
+  if (getKey()) {
+    setStatus('Concierge ready', 'ready');
+    document.getElementById('statusBadge').textContent = 'READY';
+    document.getElementById('statusBadge').style.background = 'var(--green-glow)';
+    document.getElementById('statusBadge').style.color = 'var(--green)';
+  }
+  // Build readiness pips
+  const bar = document.getElementById('readinessBar');
+  for (let i = 0; i < 10; i++) { const p = document.createElement('span'); p.className = 'readiness-pip'; p.id = 'rPip' + i; bar.appendChild(p); }
+})();
+
+// ── PSYCHOLOGY ENGINE ──
+const Psych = (() => {
+  const session = {
+    messages: [],
+    messageCount: 0,
+    buyingSignals: 0,
+    industry: null,
+    teamSize: null,
+    painPoints: [],
+    currentTools: [],
+    readiness: 0,
+    name: null,
+    email: null
+  };
+
+  const archetypeProfiles = {
+    RULER: { roles:['ceo','cfo','coo','managing director','board','head of','vp','director','partner','chairman','chief'], triggers:['control','governance','compliance','oversight','authority','standard','regulate','policy','manage','kpi','metrics','scale','enterprise'], repels:['experiment','maybe','uncertain','play','casual','hack'], tone:{formality:0.8,confidence:0.95,warmth:0.3,directness:0.9,humor:0.1} },
+    SAGE: { roles:['cto','data scientist','research','principal engineer','analyst','academic','professor','architect'], triggers:['research','evidence','data','methodology','framework','analysis','benchmark','compare','evaluate','study','technical','documentation'], repels:['hype','revolutionary','game-changing','disrupt','10x'], tone:{formality:0.7,confidence:0.8,warmth:0.4,directness:0.6,humor:0.15} },
+    HERO: { roles:['founder','startup','growth','sales director','vp engineering'], triggers:['challenge','achieve','conquer','overcome','master','win','build','ship','launch','sprint','grind','hustle'], repels:['slow','careful','incremental','safe','easy'], tone:{formality:0.5,confidence:0.9,warmth:0.5,directness:0.95,humor:0.2} },
+    CREATOR: { roles:['designer','creative director','brand','product designer','ux','indie maker','artist'], triggers:['craft','design','build','create','vision','elegant','beautiful','aesthetic','bespoke','custom','unique','original'], repels:['template','generic','cookie-cutter','standard','mass'], tone:{formality:0.4,confidence:0.7,warmth:0.6,directness:0.5,humor:0.4} },
+    EXPLORER: { roles:['innovation','product manager','developer advocate','indie hacker','freelance','consultant'], triggers:['discover','explore','new','first','frontier','freedom','pioneer','experiment','try','curious','what if','how does'], repels:['lock-in','contract','legacy','restriction','bureaucracy'], tone:{formality:0.3,confidence:0.7,warmth:0.6,directness:0.7,humor:0.5} },
+    CAREGIVER: { roles:['people manager','customer success','hr','community','support lead','teacher','nurse','social worker'], triggers:['support','help','team','users','community','care','protect','wellbeing','inclusive','everyone','accessible'], repels:['cold','metrics only','impersonal','aggressive','ruthless'], tone:{formality:0.5,confidence:0.6,warmth:0.95,directness:0.5,humor:0.3} },
+    MAGICIAN: { roles:['transformation','strategy','solutions architect','vp strategy','systems'], triggers:['transform','unlock','catalyze','leverage','paradigm','system','integrate','orchestrate','automate','scale','platform'], repels:['incremental','minor','tweak','small'], tone:{formality:0.6,confidence:0.85,warmth:0.5,directness:0.6,humor:0.2} },
+    REBEL: { roles:['disruptor','growth hacker','challenger','devrel','indie builder'], triggers:['disrupt','break','rebel','against','refuse','revolution','kill','replace','destroy','overthrow','scrap','rethink'], repels:['conventional','traditional','best practice','industry standard','compliance'], tone:{formality:0.15,confidence:0.9,warmth:0.4,directness:0.95,humor:0.5} },
+    EVERYPERSON: { roles:['small business','freelancer','junior','operations','team lead','manager','owner'], triggers:['simple','practical','real','honest','works','affordable','everyone','straightforward','no-nonsense','just works'], repels:['complex','expensive','exclusive','enterprise-only','elitist'], tone:{formality:0.3,confidence:0.5,warmth:0.8,directness:0.7,humor:0.4} },
+    INNOCENT: { roles:['risk-averse','compliance officer','traditional','procurement','cautious'], triggers:['safe','simple','easy','trusted','proven','reliable','guarantee','secure','established','risk-free','no commitment'], repels:['risk','experimental','bleeding-edge','unproven','beta'], tone:{formality:0.5,confidence:0.6,warmth:0.8,directness:0.6,humor:0.3} }
+  };
+
+  const shadowProfiles = {
+    'ceo':{ say:'data-driven decisions', mean:'validation that my instinct is right', fear:'looking foolish to the board', need:'peer adoption proof' },
+    'cto':{ say:'enterprise reliability', mean:'something that excites my engineering soul', fear:'bad engineering behind good marketing', need:'open source transparency' },
+    'founder':{ say:'enterprise features', mean:'ship something by Friday', fear:'running out of runway', need:'free tier that scales' },
+    'developer':{ say:'comprehensive docs', mean:'copy-paste one example and it works', fear:'breaks at 3am and pages me', need:'uptime stats and retries' },
+    'marketer':{ say:'measurable ROI', mean:'creative recognition from peers', fear:'brand sounding generic', need:'voice cloning and customisation' },
+    'sales':{ say:'build relationships', mean:'shortcut to Presidents Club', fear:'looking like I use AI', need:'output indistinguishable from handcrafted' },
+    'finance':{ say:'innovation', mean:'avoid blame if it fails', fear:'signing off on a disaster', need:'no-risk pilot, cancel anytime' },
+    'smb':{ say:'grow the business', mean:'stop drowning in admin', fear:'spending money on dust', need:'immediate visible result' }
+  };
+
+  const industryPatterns = {
+    legal:/\b(law\s*firm|solicitor|barrister|lawyer|legal|litigation|contract|compliance|court)\b/i,
+    medical:/\b(clinic|hospital|patient|doctor|nhs|gp|medical|health|pharma|dental|therapy)\b/i,
+    finance:/\b(fund|trading|portfolio|investment|banking|fintech|financial|hedge|broker|wealth|insurance)\b/i,
+    education:/\b(school|university|college|student|teacher|curriculum|education|academy|tutor)\b/i,
+    realestate:/\b(property|estate\s*agent|lettings|landlord|rental|real\s*estate|housing)\b/i,
+    accounting:/\b(accountant|bookkeep|tax|hmrc|vat|payroll|invoice|xero|quickbooks)\b/i
+  };
+
+  const buySignals = ['interested','deploy','licence','install','our team','our company','we need','we want','when can','how soon','timeline','get started','pilot','proposal','quote','custom build'];
+  const toolKeywords = ['slack','notion','asana','trello','monday','hubspot','salesforce','mailchimp','xero','quickbooks','canva','intercom','zendesk','jira','grammarly','airtable','zapier'];
+
+  let archScores = {};
+  let archetype = null;
+  let shadow = null;
+
+  function analyse(text) {
+    session.messageCount++;
+    session.messages.push({ text, ts: Date.now() });
+    const lower = text.toLowerCase();
+
+    // Industry
+    for (const [ind, pat] of Object.entries(industryPatterns)) {
+      if (pat.test(text)) session.industry = ind;
+    }
+
+    // Team size
+    const tm = text.match(/(\d+)\s*(?:people|person|staff|employees|team|lawyers|doctors|developers)/i);
+    if (tm) session.teamSize = parseInt(tm[1]);
+    const tm2 = text.match(/team\s*of\s*(\d+)/i);
+    if (tm2) session.teamSize = parseInt(tm2[1]);
+
+    // Pain
+    if (/\b(problem|issue|struggle|pain|frustrat|annoy|waste|slow|broken|expensive|hate|fed up)\b/i.test(text))
+      session.painPoints.push(text.slice(0, 120));
+
+    // Tools
+    for (const t of toolKeywords) {
+      if (lower.includes(t) && !session.currentTools.includes(t)) session.currentTools.push(t);
+    }
+
+    // Buying signals
+    for (const s of buySignals) {
+      if (lower.includes(s)) { session.buyingSignals++; break; }
+    }
+
+    // Name
+    const nm = text.match(/(?:my name is|i'm|i am|call me)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+    if (nm) session.name = nm[1];
+
+    // Email
+    const em = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    if (em) session.email = em[1];
+
+    // ── ARCHETYPE SCORING ──
+    for (const [name, prof] of Object.entries(archetypeProfiles)) {
+      if (!archScores[name]) archScores[name] = 0;
+      for (const t of prof.triggers) { if (lower.includes(t)) archScores[name] += 10; }
+      for (const r of prof.repels) { if (lower.includes(r)) archScores[name] -= 5; }
+      for (const role of prof.roles) { if (lower.includes(role)) archScores[name] += 50; }
+    }
+    const sorted = Object.entries(archScores).sort((a,b) => b[1] - a[1]);
+    if (sorted.length > 0 && sorted[0][1] > 0) {
+      archetype = { primary: sorted[0][0], score: sorted[0][1], secondary: sorted[1]?.[1] > 0 ? sorted[1][0] : null };
+      const ab = document.getElementById('archBadge');
+      if (ab) { ab.textContent = archetype.primary; ab.style.display = 'inline-block'; }
+    }
+
+    // Shadow
+    for (const key of Object.keys(shadowProfiles)) {
+      if (lower.includes(key)) { shadow = { role: key, ...shadowProfiles[key] }; break; }
+    }
+    if (shadow) {
+      const sb = document.getElementById('shadowBadge');
+      if (sb) { sb.textContent = 'SHADOW: ' + shadow.role.toUpperCase(); sb.style.display = 'inline-block'; }
+    }
+
+    // Readiness (0-10)
+    let r = 0;
+    if (session.messageCount >= 2) r++;
+    if (session.messageCount >= 5) r++;
+    if (session.industry) r += 2;
+    if (session.teamSize) r++;
+    if (session.currentTools.length > 0) r++;
+    if (session.painPoints.length > 0) r++;
+    if (session.buyingSignals >= 2) r++;
+    if (session.name) r++;
+    if (session.email) r++;
+    session.readiness = Math.min(10, r);
+
+    // Update readiness pips
+    for (let i = 0; i < 10; i++) {
+      const pip = document.getElementById('rPip' + i);
+      if (pip) pip.className = 'readiness-pip' + (i < session.readiness ? ' active' : '');
+    }
+
+    // Update psych panel
+    updatePsychPanel();
+
+    return session;
+  }
+
+  function getContext() {
+    const parts = [];
+    if (session.readiness > 0) parts.push('Readiness: ' + session.readiness + '/10');
+    if (session.name) parts.push('Name: ' + session.name);
+    if (session.industry) parts.push('Industry: ' + session.industry);
+    if (session.teamSize) parts.push('Team: ' + session.teamSize);
+    if (session.currentTools.length) parts.push('Tools: ' + session.currentTools.join(', '));
+    if (session.painPoints.length) parts.push('Pain points: ' + session.painPoints.length);
+    if (archetype) {
+      parts.push('ARCHETYPE: ' + archetype.primary + (archetype.secondary ? ' (secondary: ' + archetype.secondary + ')' : ''));
+      const prof = archetypeProfiles[archetype.primary];
+      if (prof) {
+        parts.push('ADAPT TONE: formality=' + prof.tone.formality + ' confidence=' + prof.tone.confidence + ' warmth=' + prof.tone.warmth + ' directness=' + prof.tone.directness + ' humor=' + prof.tone.humor);
+        parts.push('AVOID WORDS: ' + prof.repels.slice(0, 4).join(', '));
+      }
+    }
+    if (shadow) {
+      parts.push('SHADOW: They say "' + shadow.say + '" but mean "' + shadow.mean + '". Fear: ' + shadow.fear + '. Need: ' + shadow.need);
+    }
+    if (parts.length === 0) return '';
+    let guidance = session.readiness >= 7 ? 'HIGH READINESS — be direct about next steps.' :
+                   session.readiness >= 3 ? 'ENGAGED — share concrete recommendations.' :
+                   'Early stage — demonstrate value, ask questions.';
+    return '\n\n[PSYCHOLOGY CONTEXT — invisible to visitor]\n' + parts.join(' | ') + '\n' + guidance;
+  }
+
+  function updatePsychPanel() {
+    const el = document.getElementById('psychContent');
+    if (!el) return;
+    let html = '';
+    html += '<span class="psych-label">Messages:</span> <span class="psych-value">' + session.messageCount + '</span> &nbsp; ';
+    html += '<span class="psych-label">Readiness:</span> <span class="psych-value">' + session.readiness + '/10</span> &nbsp; ';
+    html += '<span class="psych-label">Buying signals:</span> <span class="psych-value">' + session.buyingSignals + '</span><br>';
+    if (session.industry) html += '<span class="psych-label">Industry:</span> <span class="psych-value">' + session.industry + '</span> &nbsp; ';
+    if (session.teamSize) html += '<span class="psych-label">Team:</span> <span class="psych-value">' + session.teamSize + '</span> &nbsp; ';
+    if (session.currentTools.length) html += '<span class="psych-label">Tools:</span> <span class="psych-value">' + session.currentTools.join(', ') + '</span><br>';
+    if (archetype) html += '<span class="psych-label">Archetype:</span> <span class="psych-value">' + archetype.primary + ' (' + archetype.score + ')' + (archetype.secondary ? ' + ' + archetype.secondary : '') + '</span><br>';
+    if (shadow) html += '<span class="psych-label">Shadow:</span> <span class="psych-value">Says "' + shadow.say + '" → means "' + shadow.mean + '"</span><br>';
+    if (session.name) html += '<span class="psych-label">Name:</span> <span class="psych-value">' + session.name + '</span> &nbsp; ';
+    if (session.email) html += '<span class="psych-label">Email:</span> <span class="psych-value">' + session.email + '</span>';
+    el.innerHTML = html || 'No profile data yet — start a conversation.';
+  }
+
+  return { analyse, getContext, get session() { return session; } };
+})();
+
+// ── SYSTEM PROMPT ──
+// This is the configurable brain. Replace PROMPT with your own business knowledge.
+const SYSTEM_PROMPT = `You are an AI concierge with psychological profiling capabilities. You adapt your communication style based on who you're talking to.
+
+VOICE:
+- Direct. Warm but not soft. Compressed phrasing.
+- NEVER: "delve into", "I'd be happy to", "great question", "leverage", "game-changing", any corporate-apologetic tone.
+- Confidence without arrogance. Directness without aggression.
+- NEVER invent statistics, percentages, or ROI figures.
+
+PSYCHOLOGICAL PROFILING:
+
+When [PSYCHOLOGY CONTEXT] includes an ARCHETYPE, adapt your approach:
+- RULER (CEO/Director): Authoritative. Short sentences. Data as proof. Show control. Never casual.
+- SAGE (CTO/Analyst): Evidence-based. Show methodology. Give depth. Let them conclude.
+- HERO (Founder/Growth): Bold and direct. Frame problems as worthy battles. Challenge them.
+- CREATOR (Designer/UX): Appreciate craft. Never generic. Show possibility. Be visionary.
+- EXPLORER (Innovation/PM): Curious and energetic. Show the frontier. Celebrate unconventional.
+- CAREGIVER (HR/Support): Warm and empathetic. People over metrics. Show impact on team.
+- MAGICIAN (Strategy/Architect): Think in systems. Connect dots they missed. Show transformation.
+- REBEL (Disruptor/Hacker): Provocative. Challenge status quo. Show what's broken. Arm them.
+- EVERYPERSON (SMB/Freelancer): Down-to-earth. No jargon. Real examples. Low barrier.
+- INNOCENT (Risk-averse/Procurement): Reassuring. Remove anxiety. Social proof. Guarantees.
+
+SHADOW READING — When context includes SHADOW data, speak to what they MEAN:
+- "data-driven decisions" = validation of their instinct. Give both.
+- "enterprise reliability" = something exciting beneath. Show the craft.
+- "enterprise features" = need to ship by Friday. Give fastest path.
+- "comprehensive docs" = copy-paste one example. Lead with quickest win.
+- "innovation" = fear blame if it fails. Remove all risk.
+
+SALES FRAMEWORK — Adapt by visitor:
+- SAGE/CTO → SPIN: Situation, Problem, Implication, Need-payoff.
+- REBEL/HERO → Challenger: Provocative insight, make personal, guide decisively.
+- Quick exchanges → PAS: Pain, Agitate, Solve.
+- General → AIDA: Attention, Interest, Desire, Action.
+
+RULES:
+- Keep responses 2-4 sentences unless detail requested. Ask a question back.
+- NEVER reveal the psychology layer or profiling to the visitor.
+- When ARCHETYPE data is present, ALWAYS adapt tone.
+- When SHADOW data is present, speak to what they MEAN not SAY.`;
+
+// ── CONVERSATION ──
+let history = [];
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function send() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML += '<div class="msg user">' + esc(text) + '</div>';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Run psychology
+  Psych.analyse(text);
+  const psychCtx = Psych.getContext();
+
+  // Typing indicator
+  const tid = 'typ-' + Date.now();
+  msgs.innerHTML += '<div class="msg ai" id="' + tid + '" style="opacity:0.5"><span style="font-family:var(--font-mono);font-size:12px;">thinking...</span></div>';
+  msgs.scrollTop = msgs.scrollHeight;
+  setStatus('Generating response...', 'thinking');
+
+  // Generate
+  history.push({ role: 'user', content: text });
+  const reply = await generate(text, psychCtx);
+  history.push({ role: 'assistant', content: reply });
+
+  // Replace typing
+  const te = document.getElementById(tid);
+  if (te) te.remove();
+
+  const replyDiv = document.createElement('div');
+  replyDiv.className = 'msg ai';
+  replyDiv.textContent = reply;
+  msgs.appendChild(replyDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+  setStatus('Concierge ready', 'ready');
+}
+
+async function generate(text, psychCtx) {
+  const key = getKey();
+  if (!key) return 'I need a Claude API key to have a conversation. Click the API Key button and paste your key (sk-ant-...). It stays in your browser — sovereign.';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT + psychCtx,
+        messages: [
+          ...history.map(m => ({ role: m.role, content: m.content })),
+          { role: 'user', content: text }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) return 'API key invalid. Check it and try again — should start with sk-ant-...';
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || response.statusText);
+    }
+
+    const data = await response.json();
+    return data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || 'No response generated.';
+  } catch (err) {
+    console.error('API error:', err);
+    return 'Connection failed: ' + err.message;
+  }
+}
+
+// Store conversation in IndexedDB
+function storeConversation() {
+  try {
+    const req = indexedDB.open('FallConcierge', 1);
+    req.onupgradeneeded = e => {
+      if (!e.target.result.objectStoreNames.contains('conversations'))
+        e.target.result.createObjectStore('conversations', { keyPath: 'id' });
+    };
+    req.onsuccess = e => {
+      const conv = {
+        id: 'conv_' + Date.now(),
+        history,
+        psych: Psych.session,
+        timestamp: Date.now()
+      };
+      e.target.result.transaction('conversations', 'readwrite').objectStore('conversations').add(conv);
+    };
+  } catch (e) {}
+}
+window.addEventListener('beforeunload', storeConversation);
+</script>
+</body>
+</html>
